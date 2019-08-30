@@ -4,9 +4,9 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "label": "build",
+            "label": "build-client",
             "type": "shell",
-            "command": "go build all"
+            "command": "go build"
         }
     ]
 }

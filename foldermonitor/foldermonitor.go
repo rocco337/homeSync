@@ -23,7 +23,7 @@ func (service FileMonitorService) Scan() map[string]FileInfo {
 		throwAndLogIfError(err)
 		if !info.IsDir() {
 			file := new(FileInfo)
-			file.RelativePath = strings.Replace(path, service.RootPath, "", 1)
+			file.RelativePath = strings.Replace(path, service.RootPath+"/", "", 1)
 			file.Path = path
 			file.Modified = info.ModTime()
 			file.Name = info.Name()

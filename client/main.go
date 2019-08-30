@@ -6,19 +6,23 @@ import (
 	"homesync.com/foldermonitor"
 )
 
+const LocalFolderPath = "/home/roko/sharedTest"
+const RemoteFolderPath = "/home/roko/sharedTestRemote"
+
 func main() {
-	localFolderPath := "/home/roko/sharedTest"
-	remoteFolderPath := "/home/roko/sharedTestRemote"
 
 	localFileMonitorService := new(foldermonitor.FileMonitorService)
-	localFileMonitorService.RootPath = localFolderPath
+	localFileMonitorService.RootPath = LocalFolderPath
 
-	remoteFileMonitorService := new(foldermonitor.FileMonitorService)
-	remoteFileMonitorService.RootPath = remoteFolderPath
+	// remoteFileMonitorService := new(foldermonitor.FileMonitorService)
+	// remoteFileMonitorService.RootPath = remoteFolderPath
 
-	fmt.Println("Starting to monitor folder: " + localFolderPath)
+	serverService := new(HomesyncServerService)
+	serverService.RootPath = RemoteFolderPath
+
+	fmt.Println("Starting to monitor folder: " + LocalFolderPath)
 	localFiles := localFileMonitorService.Scan()
-	remoteFiles := remoteFileMonitorService.Scan()
+	remoteFiles := serverService.GetFolderTree()
 
 	filesToUpload := make(map[string]foldermonitor.FileInfo)
 	filesToRemoveFromRemote := make(map[string]foldermonitor.FileInfo)
@@ -44,8 +48,8 @@ func main() {
 	}
 
 	fmt.Println("UPLOAD=====================")
-	for key, value := range filesToUpload {
-		fmt.Println(key, value.Path, value.Modified)
+	for _, value := range filesToUpload {
+		serverService.Upload(value)
 	}
 
 	fmt.Println("REMOVE=====================")
@@ -59,16 +63,4 @@ func throwAndLogIfError(err error) {
 		fmt.Println("Error: " + err.Error())
 		panic(err)
 	}
-}
-
-type FileServerService struct {
-	rootPath string
-}
-
-func (serivce FileServerService) Add(file []byte, info foldermonitor.FileInfo) {
-
-}
-
-func (serivce FileServerService) Remove(file []byte, info foldermonitor.FileInfo) {
-
 }
