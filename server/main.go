@@ -4,6 +4,7 @@ import (
 	"net"
 	"net/http"
 	"os"
+	"server/service"
 	"time"
 
 	"github.com/bnkamalesh/webgo"
@@ -25,12 +26,24 @@ func main() {
 func getRoutes() []*webgo.Route {
 	return []*webgo.Route{
 		&webgo.Route{
-			Name:     "api",                                         // A label for the API/URI, this is not used anywhere.
+			Name:     "status",                                      // A label for the API/URI, this is not used anywhere.
 			Method:   http.MethodGet,                                // request type
 			Pattern:  "/status",                                     // Pattern for the route
 			Handlers: []http.HandlerFunc{middleware.Cors(), status}, // route handler
 		},
+		&webgo.Route{
+			Name:     "api/tree",                                           // A label for the API/URI, this is not used anywhere.
+			Method:   http.MethodGet,                                       // request type
+			Pattern:  "/api/tree",                                          // Pattern for the route
+			Handlers: []http.HandlerFunc{middleware.Cors(), getFolderTree}, // route handler
+		},
 	}
+}
+
+func getFolderTree(w http.ResponseWriter, r *http.Request) {
+	service := new(service.HomesyncServerService)
+	service.RootPath = "/home/roko/sharedTestRemote"
+	webgo.R200(w, service.GetFolderTree())
 }
 
 func status(w http.ResponseWriter, r *http.Request) {
