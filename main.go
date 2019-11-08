@@ -2,14 +2,14 @@ package main
 
 import (
 	"fmt"
-	"homesync/server"
+	"homesync/client"
 )
 
 func main() {
 	fmt.Println("Starting Homesync client and server")
 
-	server := new(server.HomeSyncServer)
-	server.Start()
+	//server := new(server.HomeSyncServer)
+	//server.Start()
 
 	// serverService := new(homesyncserverservice.HomesyncServerService)
 
@@ -18,7 +18,7 @@ func main() {
 	// file.RelativePath = "Roko Bobic_CV.pdf"
 	// serverService.Upload(*file)
 
-	// client := new(client.HomeSyncClient)
-	// client.Start()
+	client := new(client.HomeSyncClient)
+	client.Start()
 
 }

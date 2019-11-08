@@ -10,38 +10,15 @@ import (
 	"log"
 	"mime/multipart"
 	"net/http"
+	"net/url"
 	"os"
 	"path/filepath"
 )
 
 type HomesyncServerService struct {
-	RootPath string
 }
 
 func (service HomesyncServerService) Upload(info foldermonitor.FileInfo) {
-	//destinationPath := service.RootPath + "/" + info.RelativePath
-
-	// err := os.MkdirAll(strings.Replace(destinationPath, info.Name, "", 1), 0755)
-	// if err == nil || os.IsExist(err) {
-	// } else {
-	// 	panic(err)
-	// }
-
-	// destination, err := os.Create(destinationPath)
-	// if err != nil {
-	// 	panic(err)
-	// }
-
-	// source, err := os.Open(info.Path)
-	// if err != nil {
-	// 	return
-	// }
-	// defer source.Close()
-	// defer destination.Close()
-
-	// io.Copy(destination, source)
-	// fmt.Println("Soruce", info.Path, " is copied to ", destinationPath)
-
 	request, err := newfileUploadRequest("http://localhost:8080/api/upload", info.Path, info.RelativePath)
 	if err != nil {
 		log.Fatal(err)
@@ -80,7 +57,14 @@ func newfileUploadRequest(uri string, path string, filename string) (*http.Reque
 }
 
 func (serivce HomesyncServerService) Remove(info foldermonitor.FileInfo) {
+	response, err := http.PostForm("http://localhost:8080/api/delete", url.Values{
+		"pathToDelete": {info.RelativePath},
+	})
 
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println(response)
 }
 
 /*GetFolderTree - calls remote server and gets state of remote folder */
@@ -90,8 +74,8 @@ func (service HomesyncServerService) GetFolderTree() map[string]foldermonitor.Fi
 	if err != nil {
 		// handle error
 	}
-	defer resp.Body.Close()
 	body, err := ioutil.ReadAll(resp.Body)
+	defer resp.Body.Close()
 
 	//var result TreeResult
 	var jsonResult map[string]map[string]foldermonitor.FileInfo

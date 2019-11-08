@@ -6,6 +6,7 @@ import (
 	"io"
 	"mime/multipart"
 	"os"
+	"path/filepath"
 	"strings"
 )
 
@@ -37,8 +38,33 @@ func (service HardDriveOperations) Create(relativePath string, fileName string, 
 }
 
 /*Remove */
-func (serivce HardDriveOperations) Remove(info foldermonitor.FileInfo) {
+func (service HardDriveOperations) Remove(path string) {
+	destinationPath := service.RootPath + "/" + path
 
+	os.Remove(destinationPath)
+
+	dir := filepath.Dir(destinationPath)
+	if IsDirEmpty(dir) {
+		os.Remove(dir)
+	}
+}
+
+/*IsDirEmpty */
+func IsDirEmpty(name string) bool {
+	f, err := os.Open(name)
+	if err != nil {
+		return false
+	}
+	defer f.Close()
+
+	// read in ONLY one file
+	_, err = f.Readdir(1)
+
+	// and if the file is EOF... well, the dir is empty.
+	if err == io.EOF {
+		return true
+	}
+	return false
 }
 
 /*Tree - scans folder and return structure */

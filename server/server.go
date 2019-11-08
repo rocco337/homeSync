@@ -47,6 +47,12 @@ func (server HomeSyncServer) getRoutes() []*webgo.Route {
 			Pattern:  "/api/upload",                                        // Pattern for the route
 			Handlers: []http.HandlerFunc{middleware.Cors(), server.upload}, // route handler
 		},
+		&webgo.Route{
+			Name:     "api/delete",                                         // A label for the API/URI, this is not used anywhere.
+			Method:   http.MethodPost,                                      // request type
+			Pattern:  "/api/delete",                                        // Pattern for the route
+			Handlers: []http.HandlerFunc{middleware.Cors(), server.delete}, // route handler
+		},
 	}
 }
 func (server HomeSyncServer) upload(w http.ResponseWriter, r *http.Request) {
@@ -99,4 +105,10 @@ func (server HomeSyncServer) status(w http.ResponseWriter, r *http.Request) {
 	}
 
 	webgo.R200(w, data)
+}
+
+func (server HomeSyncServer) delete(w http.ResponseWriter, r *http.Request) {
+	relativePath := r.FormValue("pathToDelete")
+	server.hardDriveOperations.Remove(relativePath)
+
 }

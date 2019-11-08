@@ -7,7 +7,6 @@ import (
 )
 
 const LocalFolderPath = "/home/roko/sharedTest"
-const RemoteFolderPath = "/home/roko/sharedTestRemote"
 
 /*HomeSyncClient */
 type HomeSyncClient struct {
@@ -21,7 +20,6 @@ func (client HomeSyncClient) Start() {
 
 	//create server object - upload changed files
 	serverService := new(homesyncserverservice.HomesyncServerService)
-	serverService.RootPath = RemoteFolderPath
 
 	fmt.Println("Starting to monitor folder: " + LocalFolderPath)
 	localFiles := localFileMonitorService.Scan()
@@ -58,6 +56,7 @@ func (client HomeSyncClient) Start() {
 	fmt.Println("REMOVE=====================")
 	for key, value := range filesToRemoveFromRemote {
 		fmt.Println(key, value.Path, value.Modified)
+		serverService.Remove(value)
 	}
 }
 
