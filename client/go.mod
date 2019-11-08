@@ -1,7 +1,6 @@
-module homesync.com/client
+module client
 
 go 1.12
 
-require homesync.com/foldermonitor v0.0.0
-
-replace homesync.com/foldermonitor => ../foldermonitor
+require homesync/foldermonitor v0.0.0
+replace homesync/foldermonitor => ../foldermonitor

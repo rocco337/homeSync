@@ -1,12 +1,11 @@
-package main
+package client
 
 import (
 	"fmt"
+	"homesync/foldermonitor"
 	"io"
 	"os"
 	"strings"
-
-	"homesync.com/foldermonitor"
 )
 
 type HomesyncServerService struct {

@@ -1,3 +1,3 @@
-module homesync.com/foldermonitor
+module foldermonitor
 
 go 1.12
