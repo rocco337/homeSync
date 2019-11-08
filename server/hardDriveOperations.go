@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"homesync/foldermonitor"
 	"io"
+	"mime/multipart"
 	"os"
 	"strings"
 )
@@ -13,10 +14,12 @@ type HardDriveOperations struct {
 	RootPath string
 }
 
-func (service HardDriveOperations) Create(info foldermonitor.FileInfo) {
-	destinationPath := service.RootPath + "/" + info.RelativePath
+/*Create - creates file on hard drive*/
+func (service HardDriveOperations) Create(relativePath string, fileName string, fileStream multipart.File) {
+	destinationPath := service.RootPath + "/" + relativePath
 
-	err := os.MkdirAll(strings.Replace(destinationPath, info.Name, "", 1), 0755)
+	//Creates
+	err := os.MkdirAll(strings.Replace(destinationPath, fileName, "", 1), 0755)
 	if err == nil || os.IsExist(err) {
 	} else {
 		panic(err)
@@ -27,21 +30,18 @@ func (service HardDriveOperations) Create(info foldermonitor.FileInfo) {
 		panic(err)
 	}
 
-	source, err := os.Open(info.Path)
-	if err != nil {
-		return
-	}
-	defer source.Close()
 	defer destination.Close()
 
-	io.Copy(destination, source)
-	fmt.Println("Soruce", info.Path, " is copied to ", destinationPath)
+	io.Copy(destination, fileStream)
+	fmt.Println("Soruce", relativePath, " is copied to ", destinationPath)
 }
 
+/*Remove */
 func (serivce HardDriveOperations) Remove(info foldermonitor.FileInfo) {
 
 }
 
+/*Tree - scans folder and return structure */
 func (service HardDriveOperations) Tree() map[string]foldermonitor.FileInfo {
 	monitorService := new(foldermonitor.FileMonitorService)
 	monitorService.RootPath = service.RootPath

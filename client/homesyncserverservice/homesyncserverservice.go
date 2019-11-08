@@ -1,14 +1,17 @@
 package homesyncserverservice
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"homesync/foldermonitor"
 	"io"
 	"io/ioutil"
+	"log"
+	"mime/multipart"
 	"net/http"
 	"os"
-	"strings"
+	"path/filepath"
 )
 
 type HomesyncServerService struct {
@@ -16,28 +19,64 @@ type HomesyncServerService struct {
 }
 
 func (service HomesyncServerService) Upload(info foldermonitor.FileInfo) {
-	destinationPath := service.RootPath + "/" + info.RelativePath
+	//destinationPath := service.RootPath + "/" + info.RelativePath
 
-	err := os.MkdirAll(strings.Replace(destinationPath, info.Name, "", 1), 0755)
-	if err == nil || os.IsExist(err) {
-	} else {
-		panic(err)
-	}
+	// err := os.MkdirAll(strings.Replace(destinationPath, info.Name, "", 1), 0755)
+	// if err == nil || os.IsExist(err) {
+	// } else {
+	// 	panic(err)
+	// }
 
-	destination, err := os.Create(destinationPath)
+	// destination, err := os.Create(destinationPath)
+	// if err != nil {
+	// 	panic(err)
+	// }
+
+	// source, err := os.Open(info.Path)
+	// if err != nil {
+	// 	return
+	// }
+	// defer source.Close()
+	// defer destination.Close()
+
+	// io.Copy(destination, source)
+	// fmt.Println("Soruce", info.Path, " is copied to ", destinationPath)
+
+	request, err := newfileUploadRequest("http://localhost:8080/api/upload", info.Path, info.RelativePath)
 	if err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
+	client := &http.Client{}
+	resp, err := client.Do(request)
+	fmt.Println(resp)
+}
 
-	source, err := os.Open(info.Path)
+func newfileUploadRequest(uri string, path string, filename string) (*http.Request, error) {
+	file, err := os.Open(path)
 	if err != nil {
-		return
+		return nil, err
 	}
-	defer source.Close()
-	defer destination.Close()
+	defer file.Close()
 
-	io.Copy(destination, source)
-	fmt.Println("Soruce", info.Path, " is copied to ", destinationPath)
+	body := &bytes.Buffer{}
+	writer := multipart.NewWriter(body)
+
+	part, err := writer.CreateFormFile("data", filepath.Base(path))
+	if err != nil {
+		return nil, err
+	}
+	_, err = io.Copy(part, file)
+
+	_ = writer.WriteField("relativePath", filename)
+
+	err = writer.Close()
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", uri, body)
+	req.Header.Set("Content-Type", writer.FormDataContentType())
+	return req, err
 }
 
 func (serivce HomesyncServerService) Remove(info foldermonitor.FileInfo) {
