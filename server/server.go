@@ -73,6 +73,7 @@ func upload(w http.ResponseWriter, r *http.Request) {
 func folderTree(w http.ResponseWriter, r *http.Request) {
 	service := new(HardDriveOperations)
 	service.RootPath = "/home/roko/sharedTestRemote"
+
 	webgo.R200(w, service.Tree())
 }
 func status(w http.ResponseWriter, r *http.Request) {

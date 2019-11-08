@@ -2,24 +2,25 @@ package client
 
 import (
 	"fmt"
+	"homesync/client/homesyncserverservice"
 	"homesync/foldermonitor"
 )
 
 const LocalFolderPath = "/home/roko/sharedTest"
 const RemoteFolderPath = "/home/roko/sharedTestRemote"
 
+/*HomeSyncClient */
 type HomeSyncClient struct {
 }
 
+/*Start - starts to monitor changes in root folder*/
 func (client HomeSyncClient) Start() {
 
 	localFileMonitorService := new(foldermonitor.FileMonitorService)
 	localFileMonitorService.RootPath = LocalFolderPath
 
-	// remoteFileMonitorService := new(foldermonitor.FileMonitorService)
-	// remoteFileMonitorService.RootPath = remoteFolderPath
-
-	serverService := new(HomesyncServerService)
+	//create server object - upload changed files
+	serverService := new(homesyncserverservice.HomesyncServerService)
 	serverService.RootPath = RemoteFolderPath
 
 	fmt.Println("Starting to monitor folder: " + LocalFolderPath)
