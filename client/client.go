@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"homesync/client/homesyncserverservice"
 	"homesync/foldermonitor"
+	"strconv"
 )
 
 const LocalFolderPath = "/home/roko/sharedTest"
@@ -44,14 +45,13 @@ func (client HomeSyncClient) Start() {
 		}
 	}
 
-	fmt.Println("UPLOAD=====================")
+	fmt.Println("UPLOAD: " + strconv.Itoa(len(filesToUpload)) + " files")
 	for _, value := range filesToUpload {
 		serverService.Upload(value)
 	}
 
-	fmt.Println("REMOVE=====================")
-	for key, value := range filesToRemoveFromRemote {
-		fmt.Println(key, value.Path, value.Modified)
+	fmt.Println("REMOVE: " + strconv.Itoa(len(filesToRemoveFromRemote)) + " files")
+	for _, value := range filesToRemoveFromRemote {
 		serverService.Remove(value)
 	}
 }

@@ -3,6 +3,7 @@
 * Support list of directories
 * Default folder is username from request
 * support batch upload/remove?
+* optimize tree function
 
 ===============================================
 ##Client
