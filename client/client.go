@@ -20,6 +20,8 @@ func (client HomeSyncClient) Start() {
 
 	//create server object - upload changed files
 	serverService := new(homesyncserverservice.HomesyncServerService)
+	serverService.Username = "rbobic"
+	serverService.BaseUrl = "http://localhost:8080/"
 
 	fmt.Println("Starting to monitor folder: " + LocalFolderPath)
 	localFiles := localFileMonitorService.Scan()
@@ -40,12 +42,6 @@ func (client HomeSyncClient) Start() {
 		if _, exists := localFiles[key]; !exists {
 			filesToRemoveFromRemote[key] = value
 		}
-	}
-
-	//find removed files
-	fmt.Println("LOCAL=====================")
-	for key, value := range localFiles {
-		fmt.Println(key, value.RelativePath, value.Modified)
 	}
 
 	fmt.Println("UPLOAD=====================")

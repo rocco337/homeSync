@@ -67,7 +67,8 @@ func (server HomeSyncServer) upload(w http.ResponseWriter, r *http.Request) {
 		panic(err)
 	}
 
-	server.hardDriveOperations.Create(relativePath, header.Filename, file)
+	username := r.Header.Get("username") + "/"
+	server.hardDriveOperations.Create(username+relativePath, header.Filename, file)
 
 	defer file.Close()
 	defer r.Body.Close()
@@ -76,10 +77,9 @@ func (server HomeSyncServer) upload(w http.ResponseWriter, r *http.Request) {
 }
 
 func (server HomeSyncServer) folderTree(w http.ResponseWriter, r *http.Request) {
-	service := new(HardDriveOperations)
-	service.RootPath = "/home/roko/sharedTestRemote"
+	username := r.Header.Get("username")
 
-	webgo.R200(w, service.Tree())
+	webgo.R200(w, server.hardDriveOperations.Tree(username))
 }
 
 func (server HomeSyncServer) status(w http.ResponseWriter, r *http.Request) {
@@ -109,6 +109,8 @@ func (server HomeSyncServer) status(w http.ResponseWriter, r *http.Request) {
 
 func (server HomeSyncServer) delete(w http.ResponseWriter, r *http.Request) {
 	relativePath := r.FormValue("pathToDelete")
-	server.hardDriveOperations.Remove(relativePath)
+	username := r.Header.Get("username") + "/"
 
+	server.hardDriveOperations.Remove(username + relativePath)
+	webgo.R200(w, nil)
 }

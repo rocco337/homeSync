@@ -1,5 +1,10 @@
 #TODO
+* Run client as service
+* Support list of directories
+* Default folder is username from request
+* support batch upload/remove?
 
+===============================================
 ##Client
 * Test that creates random files in folders
 * Scan folder every X seconds
@@ -13,6 +18,6 @@
     * Use computer name and username as unique username on server
 
 ##Server
-* Receive instructions to create delete files
+* Receive instructions to create delete files*
 * Default folder is username from request
 * Send server discovery signal

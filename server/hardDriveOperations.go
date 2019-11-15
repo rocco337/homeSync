@@ -41,11 +41,17 @@ func (service HardDriveOperations) Create(relativePath string, fileName string, 
 func (service HardDriveOperations) Remove(path string) {
 	destinationPath := service.RootPath + "/" + path
 
-	os.Remove(destinationPath)
+	err := os.Remove(destinationPath)
+	if err != nil {
+		panic(err)
+	}
 
 	dir := filepath.Dir(destinationPath)
 	if IsDirEmpty(dir) {
-		os.Remove(dir)
+		err = os.Remove(dir)
+		if err != nil {
+			panic(err)
+		}
 	}
 }
 
@@ -58,8 +64,11 @@ func IsDirEmpty(name string) bool {
 	defer f.Close()
 
 	// read in ONLY one file
-	_, err = f.Readdir(1)
+	n, err := f.Readdir(1)
 
+	if len(n) <= 0 {
+		return true
+	}
 	// and if the file is EOF... well, the dir is empty.
 	if err == io.EOF {
 		return true
@@ -68,8 +77,16 @@ func IsDirEmpty(name string) bool {
 }
 
 /*Tree - scans folder and return structure */
-func (service HardDriveOperations) Tree() map[string]foldermonitor.FileInfo {
+func (service HardDriveOperations) Tree(path string) map[string]foldermonitor.FileInfo {
 	monitorService := new(foldermonitor.FileMonitorService)
-	monitorService.RootPath = service.RootPath
+	monitorService.RootPath = service.RootPath + "/" + path
+
+	if _, err := os.Stat(monitorService.RootPath); os.IsNotExist(err) {
+		err = os.Mkdir(monitorService.RootPath, os.ModeDir)
+		if err != nil {
+			panic(err)
+		}
+	}
+
 	return monitorService.Scan()
 }
