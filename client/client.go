@@ -5,6 +5,7 @@ import (
 	"homesync/client/homesyncserverservice"
 	"homesync/foldermonitor"
 	"strconv"
+	"time"
 )
 
 const LocalFolderPath = "/home/roko/sharedTest"
@@ -25,35 +26,40 @@ func (client HomeSyncClient) Start() {
 	serverService.BaseUrl = "http://localhost:8080/"
 
 	fmt.Println("Starting to monitor folder: " + LocalFolderPath)
-	localFiles := localFileMonitorService.Scan()
-	remoteFiles := serverService.GetFolderTree()
+	for {
+		localFiles := localFileMonitorService.Scan()
+		remoteFiles := serverService.GetFolderTree()
 
-	filesToUpload := make(map[string]foldermonitor.FileInfo)
-	filesToRemoveFromRemote := make(map[string]foldermonitor.FileInfo)
+		filesToUpload := make(map[string]foldermonitor.FileInfo)
+		filesToRemoveFromRemote := make(map[string]foldermonitor.FileInfo)
 
-	//find files to upload
-	for key, value := range localFiles {
-		if _, exists := remoteFiles[key]; !exists {
-			filesToUpload[key] = value
+		//find files to upload
+		for key, value := range localFiles {
+			if _, exists := remoteFiles[key]; !exists {
+				filesToUpload[key] = value
+			}
 		}
-	}
 
-	//find files to delete
-	for key, value := range remoteFiles {
-		if _, exists := localFiles[key]; !exists {
-			filesToRemoveFromRemote[key] = value
+		//find files to delete
+		for key, value := range remoteFiles {
+			if _, exists := localFiles[key]; !exists {
+				filesToRemoveFromRemote[key] = value
+			}
 		}
+
+		fmt.Println("UPLOAD: " + strconv.Itoa(len(filesToUpload)) + " files")
+		for _, value := range filesToUpload {
+			serverService.Upload(value)
+		}
+
+		fmt.Println("REMOVE: " + strconv.Itoa(len(filesToRemoveFromRemote)) + " files")
+		for _, value := range filesToRemoveFromRemote {
+			serverService.Remove(value)
+		}
+
+		time.Sleep(time.Second * 60)
 	}
 
-	fmt.Println("UPLOAD: " + strconv.Itoa(len(filesToUpload)) + " files")
-	for _, value := range filesToUpload {
-		serverService.Upload(value)
-	}
-
-	fmt.Println("REMOVE: " + strconv.Itoa(len(filesToRemoveFromRemote)) + " files")
-	for _, value := range filesToRemoveFromRemote {
-		serverService.Remove(value)
-	}
 }
 
 func throwAndLogIfError(err error) {

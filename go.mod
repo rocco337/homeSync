@@ -10,6 +10,9 @@ require homesync/server v0.0.0
 
 replace homesync/server => ./server
 
-require homesync/foldermonitor v0.0.0
+require (
+	github.com/bnkamalesh/webgo v2.5.1+incompatible
+	homesync/foldermonitor v0.0.0
+)
 
 replace homesync/foldermonitor => ./foldermonitor
