@@ -57,7 +57,7 @@ func (client HomeSyncClient) Start() {
 			serverService.Remove(value)
 		}
 
-		time.Sleep(time.Second * 60)
+		time.Sleep(time.Second * 10)
 	}
 
 }

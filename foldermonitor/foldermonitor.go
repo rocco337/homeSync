@@ -11,6 +11,8 @@ import (
 	"time"
 )
 
+const unixFolderPermission = 0777
+
 type FileMonitorService struct {
 	lastTimeChecked time.Time
 	RootPath        string
@@ -47,7 +49,7 @@ type FileInfo struct {
 }
 
 func (info FileInfo) GetContentHash() string {
-	file, err := os.Open(info.Path)
+	file, err := os.OpenFile(info.Path, os.O_RDWR, unixFolderPermission)
 	throwAndLogIfError(err)
 
 	defer file.Close()

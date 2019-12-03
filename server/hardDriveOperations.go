@@ -10,6 +10,8 @@ import (
 	"strings"
 )
 
+const unixFolderPermission = 0777
+
 /* HardDriveOperations */
 type HardDriveOperations struct {
 	RootPath string
@@ -20,7 +22,7 @@ func (service HardDriveOperations) Create(relativePath string, fileName string, 
 	destinationPath := service.RootPath + "/" + relativePath
 
 	//Creates
-	err := os.MkdirAll(strings.Replace(destinationPath, fileName, "", 1), 0755)
+	err := os.MkdirAll(strings.Replace(destinationPath, fileName, "", 1), unixFolderPermission)
 	if err == nil || os.IsExist(err) {
 	} else {
 		panic(err)
@@ -82,7 +84,7 @@ func (service HardDriveOperations) Tree(path string) map[string]foldermonitor.Fi
 	monitorService.RootPath = service.RootPath + "/" + path
 
 	if _, err := os.Stat(monitorService.RootPath); os.IsNotExist(err) {
-		err = os.Mkdir(monitorService.RootPath, os.ModeDir)
+		err = os.Mkdir(monitorService.RootPath, unixFolderPermission)
 		if err != nil {
 			panic(err)
 		}
