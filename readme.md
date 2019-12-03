@@ -1,12 +1,11 @@
-#TODO
-* Run client as service
+# TODO
+*  Run client as service
 * Support list of directories
 * Default folder is username from request
 * support batch upload/remove?
 * optimize tree function
 
-===============================================
-##Client
+## Client
 * Test that creates random files in folders
 * Scan folder every X seconds
     * Inputs: interval, path to monitor
@@ -18,7 +17,7 @@
     * Detect servers in local network or use preconfigured dns name
     * Use computer name and username as unique username on server
 
-##Server
+## Server
 * Receive instructions to create delete files*
 * Default folder is username from request
 * Send server discovery signal
